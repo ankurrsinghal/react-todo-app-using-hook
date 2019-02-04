@@ -1,28 +1,45 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import Form from './Form'
+import TodosList from './TodosList'
+import TODOS from './db'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+const Scroller = ({ children, className }) => (
+	<div className={'Scroller ' + className}>
+		{children}
+	</div>
+)
+
+const App = () => {
+	const [todos, setTodos] = useState(TODOS)
+
+	const handleFormSubmit = title => {
+		setTodos([ { id: todos.length + 1, title }, ...todos ])
+	}
+
+	const handleArchiveClick = id => {
+		setTodos(todos.filter(todo => todo.id !== id))
+	}
+
+	const handleToggleDone = id => {
+		setTodos(todos.map(todo => {
+			if (todo.id !== id) return todo
+			else return ({ ...todo, done: !todo.done })
+		}))
+	}
+
+	return (
+		<div className="Todo-App">
+			<Form onSubmit={handleFormSubmit} />
+			<Scroller className="TodosList-Scroller">
+				<TodosList
+					todos={todos}
+					onArchiveClick={handleArchiveClick}
+					onDoneClick={handleToggleDone}
+				/>
+			</Scroller>
+		</div>
+	);
 }
 
 export default App;
